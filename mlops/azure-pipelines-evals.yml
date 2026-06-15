@@ -1,0 +1,60 @@
+# Foundry Eval Gate: runs the ETRM agent evaluation suite on AML compute and
+# fails the pipeline if quality/safety/tool-accuracy thresholds aren't met. This
+# is the "promote on merit" idea applied to the LLM agent, not just the ML model.
+#
+# It runs AFTER the model + agent are live (the evaluators call the real endpoint
+# and the gpt-4o-eval judge), so it triggers on merges to main that touch the
+# agent or the eval suite. It can also be run manually before promoting the app.
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - webapp/backend/**
+      - src/evals/**
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: aml-etrm-vars   # AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AML_WORKSPACE,
+                           # FOUNDRY_PROJECT_ENDPOINT, AOAI_ENDPOINT, AOAI_EVAL_DEPLOYMENT,
+                           # CONTENT_SAFETY_ENDPOINT, AML_ENDPOINT_URL, AML_ENDPOINT_KEY (secret)
+  - name: serviceConnection
+    value: "aml-etrm-sc"
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.11"
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    displayName: "Install authoring dependencies"
+
+  - task: AzureCLI@2
+    displayName: "Run Foundry evaluation gate on AML compute"
+    inputs:
+      azureSubscription: $(serviceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -e
+        # run_evals reads these (UPPER_SNAKE env wins over .azure-resources.json,
+        # which isn't present in CI). --mode remote submits an AML command job on
+        # cpu-cluster; the gate is enforced inside the job, so a gate failure makes
+        # the job (and therefore this step) fail.
+        export SUBSCRIPTION_ID=$(AZURE_SUBSCRIPTION_ID)
+        export RESOURCE_GROUP=$(AZURE_RESOURCE_GROUP)
+        export WORKSPACE=$(AML_WORKSPACE)
+        export AOAI_ENDPOINT=$(AOAI_ENDPOINT)
+        export AOAI_EVAL_DEPLOYMENT=$(AOAI_EVAL_DEPLOYMENT)
+        export FOUNDRY_PROJECT_ENDPOINT=$(FOUNDRY_PROJECT_ENDPOINT)
+        export CONTENT_SAFETY_ENDPOINT=$(CONTENT_SAFETY_ENDPOINT)
+        export AML_ENDPOINT_URL=$(AML_ENDPOINT_URL)
+        export AML_ENDPOINT_KEY=$(AML_ENDPOINT_KEY)
+        python src/evals/run_evals.py --mode remote

@@ -1,0 +1,19 @@
+{
+  "temperature_c": 5171,
+  "gas_price_aeco": 5091,
+  "wind_generation_mw": 4976,
+  "net_load_mw": 4872,
+  "ail_demand_mw": 4624,
+  "dayofyear": 3366,
+  "hour": 2401,
+  "hour_cos": 1890,
+  "hour_sin": 1665,
+  "dayofweek": 1190,
+  "dow_sin": 833,
+  "dow_cos": 511,
+  "month_sin": 389,
+  "month": 363,
+  "month_cos": 335,
+  "is_weekend": 65,
+  "is_holiday": 58
+}

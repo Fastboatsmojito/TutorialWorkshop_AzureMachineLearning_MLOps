@@ -1,0 +1,17 @@
+name: aeso-evals-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      # The agent runs inside the eval job, so it needs the webapp's deps too.
+      - openai>=1.40.0
+      - requests==2.32.3
+      - pandas==2.2.3
+      - numpy==1.26.4
+      # Foundry evaluation SDK + project logging + content safety.
+      - azure-ai-evaluation>=1.0.0
+      - azure-ai-projects>=1.0.0b10
+      - azure-ai-contentsafety==1.0.0
+      - azure-identity==1.17.1

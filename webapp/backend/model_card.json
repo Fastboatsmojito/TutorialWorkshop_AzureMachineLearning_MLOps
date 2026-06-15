@@ -1,0 +1,51 @@
+{
+  "name": "aeso-price-forecaster",
+  "task": "Day-ahead hourly AESO pool price forecast (CAD/MWh)",
+  "algorithm": "LightGBM regressor",
+  "features": [
+    "hour",
+    "dayofweek",
+    "month",
+    "dayofyear",
+    "is_weekend",
+    "is_holiday",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos",
+    "ail_demand_mw",
+    "temperature_c",
+    "wind_generation_mw",
+    "gas_price_aeco",
+    "net_load_mw"
+  ],
+  "exogenous_drivers": [
+    "ail_demand_mw",
+    "temperature_c",
+    "wind_generation_mw",
+    "gas_price_aeco"
+  ],
+  "metrics": {
+    "mae": 8.75223269534689,
+    "rmse": 22.103232212324716,
+    "smape": 8.796266123479665,
+    "mape_clipped": 8.945489164635637,
+    "r2": 0.6784216078682344,
+    "n_train": 14912,
+    "n_test": 2632
+  },
+  "top_features": [
+    "temperature_c",
+    "gas_price_aeco",
+    "wind_generation_mw",
+    "net_load_mw",
+    "ail_demand_mw",
+    "dayofyear",
+    "hour",
+    "hour_cos"
+  ],
+  "training_rows": 17544,
+  "offer_cap_cad_mwh": 999.99
+}

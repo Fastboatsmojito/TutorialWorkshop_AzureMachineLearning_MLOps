@@ -1,0 +1,25 @@
+# Local dev + AML authoring environment (Python 3.11)
+azure-ai-ml==1.32.0
+azure-identity==1.17.1
+mlflow==2.15.1
+azureml-mlflow==1.59.0
+lightgbm==4.5.0
+scikit-learn==1.5.2
+pandas==2.2.3
+numpy==1.26.4
+pyarrow==17.0.0
+joblib==1.4.2
+holidays==0.57
+python-dotenv==1.0.1
+matplotlib==3.9.2
+requests==2.32.3
+
+# Foundry agent + evaluations + guardrails (tutorial modules 05-08)
+openai>=1.40.0
+azure-ai-evaluation>=1.0.0
+azure-ai-projects>=1.0.0b10
+azure-ai-contentsafety==1.0.0
+
+# Notebooks (tutorial/ runs cells on AML compute via the authoring env)
+jupyter==1.1.1
+ipykernel==6.29.5

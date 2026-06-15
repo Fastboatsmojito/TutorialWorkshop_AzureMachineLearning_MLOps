@@ -1,0 +1,21 @@
+# Keep AML job code uploads small + secret-free when `code=` is the repo root
+# (used by src/evals/run_evals.py --mode remote). Same gitignore-style syntax.
+.git/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Local-only artifacts and experiment logs (not needed in the eval job).
+mlruns/
+outputs/
+eval_output/
+model_artifacts/
+
+# Never upload secrets to a job.
+.azure-resources.json
+.env
+
+# Notebooks checkpoints + node modules.
+.ipynb_checkpoints/
+node_modules/

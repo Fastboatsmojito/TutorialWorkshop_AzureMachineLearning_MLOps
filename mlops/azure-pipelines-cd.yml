@@ -1,0 +1,59 @@
+# CD pipeline: runs on merge to main. Retrains via the AML pipeline (with the
+# evaluation gate), and if the gate passes the model is registered and rolled out
+# to the managed online endpoint. This is the automated train -> gate -> deploy loop.
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/**
+      - data/**
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: aml-etrm-vars   # define in DevOps: AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AML_WORKSPACE
+  - name: serviceConnection
+    value: "aml-etrm-sc"   # ARM service connection name
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.11"
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    displayName: "Install dependencies"
+
+  - task: AzureCLI@2
+    displayName: "Run AML pipeline (prep -> train -> eval gate -> register)"
+    inputs:
+      azureSubscription: $(serviceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        export AZURE_SUBSCRIPTION_ID=$(AZURE_SUBSCRIPTION_ID)
+        export AZURE_RESOURCE_GROUP=$(AZURE_RESOURCE_GROUP)
+        export AML_WORKSPACE=$(AML_WORKSPACE)
+        # Refresh the registered data asset, then run the gated training pipeline.
+        python data/ingest_data.py
+        python src/pipeline/pipeline.py --rmse-threshold 80
+
+  - task: AzureCLI@2
+    displayName: "Deploy newly registered model to online endpoint (blue/green)"
+    inputs:
+      azureSubscription: $(serviceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        export AZURE_SUBSCRIPTION_ID=$(AZURE_SUBSCRIPTION_ID)
+        export AZURE_RESOURCE_GROUP=$(AZURE_RESOURCE_GROUP)
+        export AML_WORKSPACE=$(AML_WORKSPACE)
+        # In production you'd deploy to a 'green' deployment, smoke test, then shift
+        # traffic. For the demo we redeploy 'blue' from the latest registered model.
+        python src/deploy/deploy_endpoint.py --model-dir model_artifacts || true

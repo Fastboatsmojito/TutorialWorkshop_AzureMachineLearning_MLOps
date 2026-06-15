@@ -1,0 +1,37 @@
+# CI pipeline: runs on every PR to main. Validates the ML code BEFORE it can be
+# merged. Lint + unit tests + a tiny smoke train/score (no Azure resources needed).
+trigger: none
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/**
+      - data/**
+      - tests/**
+      - requirements.txt
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.11"
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install pytest flake8
+    displayName: "Install dependencies"
+
+  - script: |
+      flake8 src --max-line-length=120 --extend-ignore=E203,W503 --exclude=__pycache__
+    displayName: "Lint (flake8)"
+    continueOnError: true
+
+  - script: |
+      pytest tests -q
+    displayName: "Unit + smoke tests (train & score)"

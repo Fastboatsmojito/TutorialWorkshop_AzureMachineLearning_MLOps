@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETRM Forecast Assistant</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⚡</span>
+      <div>
+        <h1>ETRM Forecast Assistant</h1>
+        <p>Day-ahead AESO power price · Azure ML model + Foundry GPT-4o</p>
+      </div>
+    </div>
+    <div id="status" class="status">checking…</div>
+  </header>
+
+  <main class="layout">
+    <section class="chat-panel">
+      <div id="messages" class="messages"></div>
+
+      <div class="suggestions" id="suggestions">
+        <button>What's the price forecast for the next 7 days?</button>
+        <button>How accurate is the model?</button>
+        <button>What's driving tomorrow's peak price?</button>
+        <button>What if demand rises 10% next week?</button>
+      </div>
+
+      <form id="chat-form" class="composer">
+        <input id="input" type="text" placeholder="Ask about the AESO price forecast…" autocomplete="off" />
+        <button type="submit" id="send">Send</button>
+      </form>
+    </section>
+
+    <section class="viz-panel">
+      <h2>Forecast</h2>
+      <div id="summary" class="summary">Ask a question to generate a forecast.</div>
+      <div class="chart-wrap"><canvas id="chart"></canvas></div>
+      <div id="tool-trace" class="tool-trace"></div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
