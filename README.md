@@ -78,6 +78,7 @@ resources in this repository.
 
 | Resource | Best for |
 |---|---|
+| [Machine Learning crash course (video)](https://youtu.be/1vkb7BCMQd0?si=YqTuzF1baRbcGwIH) | Brand new to ML. Watch this first: a 6.5-hour lecture that builds the core machine learning concepts from the ground up, so the rest of this repo makes sense. |
 | [TUTORIAL.md](TUTORIAL.md) | Learning hands-on at your own pace. A self-paced walkthrough of each layer (Azure ML, MLOps, the Foundry agent, evals, and guardrails) with a notebook per topic. |
 | [DEMO_SCRIPT.md](DEMO_SCRIPT.md) | Presenting live. The 90-minute presenter run-of-show for delivering the end-to-end story to an audience. |
 | [AML_MLOps_101](https://github.com/Fastboatsmojito/AML_MLOps_101) | Starting from the basics. A companion beginner workshop that teaches Azure ML and the MLOps lifecycle (data versioning, experiment tracking, registration, deployment, monitoring, and pipelines) on simpler text and tabular use cases. Begin here if you want the 101 before this end-to-end demo. |
