@@ -21,9 +21,68 @@ Everything is provisioned in resource group **`rg-tc-aml-foundry-etrm`** (region
 
 > **Live demo web app:** `https://etrm-qa.icybush-1b89aba9.eastus2.azurecontainerapps.io/`
 
-> **New here? Pick your path.** Work through the self-paced
-> [TUTORIAL.md](TUTORIAL.md) to learn each layer hands-on, or follow
-> [DEMO_SCRIPT.md](DEMO_SCRIPT.md) to present the 90-minute end-to-end story.
+---
+
+## Understand the use case
+
+Before the code, here is the real-world problem this demo solves and the data
+behind it.
+
+### What is ETRM trading
+
+ETRM stands for Energy Trading and Risk Management. Energy companies buy and sell
+commodities such as power, natural gas, and crude oil, and they manage the
+financial risk that comes with volatile prices. An ETRM desk owns the full trade
+lifecycle: capturing trades, tracking positions, scheduling physical delivery,
+valuing the portfolio, and measuring risk such as Value at Risk (VaR). Accurate
+price forecasts sit at the center of that work because they drive hedging
+decisions, position limits, and how the desk prices the risk it carries.
+
+### What is AESO
+
+AESO is the Alberta Electric System Operator. It runs Alberta's wholesale
+electricity market and operates the provincial power grid. Alberta uses an
+energy-only market with a single hourly "pool price" that reflects provincial
+supply and demand in real time. That price can swing sharply with weather,
+demand, and generation availability, so forecasting it well is valuable to anyone
+trading or hedging Alberta power.
+
+### What data we use and what we forecast
+
+We use an AESO-style hourly dataset, bundled at
+[data/aeso_hourly.csv](data/aeso_hourly.csv) and reproducible with
+[data/generate_dataset.py](data/generate_dataset.py). Each row is one hour and
+captures the price along with the drivers that move it.
+
+| Column | What it is |
+|---|---|
+| `pool_price` | Alberta pool price in CAD/MWh. This is the value we forecast. |
+| `ail_demand_mw` | Alberta Internal Load: total provincial electricity demand |
+| `temperature_c` | Temperature, the main driver of heating and cooling demand |
+| `wind_generation_mw` | Wind output, which lowers price through the merit-order effect |
+| `gas_price_aeco` | AECO natural gas price, the fuel cost of the marginal generator |
+
+From these we derive calendar features (hour, day of week, season, holidays) and
+**net load** (demand minus wind), the single biggest price driver.
+
+The model forecasts the **AESO day-ahead hourly pool price in CAD/MWh** for the
+next 24 hours. A trader can ask "what will tomorrow's prices look like, and when
+do they peak?" then use the answer to plan hedges and positions.
+
+---
+
+## How to use this repo
+
+Pick the path that fits your goal. The first two use the same code and Azure
+resources in this repository.
+
+| Resource | Best for |
+|---|---|
+| [TUTORIAL.md](TUTORIAL.md) | Learning hands-on at your own pace. A self-paced walkthrough of each layer (Azure ML, MLOps, the Foundry agent, evals, and guardrails) with a notebook per topic. |
+| [DEMO_SCRIPT.md](DEMO_SCRIPT.md) | Presenting live. The 90-minute presenter run-of-show for delivering the end-to-end story to an audience. |
+| [AML_MLOps_101](https://github.com/Fastboatsmojito/AML_MLOps_101) | Starting from the basics. A companion beginner workshop that teaches Azure ML and the MLOps lifecycle (data versioning, experiment tracking, registration, deployment, monitoring, and pipelines) on simpler text and tabular use cases. Begin here if you want the 101 before this end-to-end demo. |
+
+Just want to run it? Jump to [Quick start (from scratch)](#quick-start-from-scratch).
 
 ---
 
